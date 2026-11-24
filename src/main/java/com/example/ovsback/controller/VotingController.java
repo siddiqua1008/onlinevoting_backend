@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.ovsback.model.Voting;
+import com.example.ovsback.service.ResultService;
 import com.example.ovsback.service.VotingService;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -16,6 +18,31 @@ public class VotingController {
 
     @Autowired
     private VotingService votingService;
+   
+
+    @Autowired
+    private ResultService resultService; 
+
+    @GetMapping("/admin")
+    public ResponseEntity<Map<String, Long>> getVoteCounts() {
+        Map<String, Long> results = votingService.countVotesPerCandidate();
+        return ResponseEntity.ok(results);
+    }
+    
+    @PostMapping("/publish")
+    public ResponseEntity<String> publishResults() {
+        resultService.setPublished(true); // Just sets a boolean flag
+        return ResponseEntity.ok("Results published to voters");
+    }
+    @GetMapping("/public")
+    public ResponseEntity<Map<String, Long>> getPublicResults() {
+        if (!resultService.isPublished()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Map<String, Long> results = votingService.countVotesPerCandidate();
+        return ResponseEntity.ok(results);
+    }
+
 
     @PostMapping
     public ResponseEntity<?> castVote(@RequestBody Voting voting) {

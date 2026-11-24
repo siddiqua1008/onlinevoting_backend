@@ -13,6 +13,7 @@ public interface VotingRepository extends JpaRepository<Voting, Integer> {
     List<Voting> findByVoterEmail(String voterEmail);
     
     boolean existsByVoterEmailAndCandidateName(String voterEmail, String candidateName);
+	
 
     
 }

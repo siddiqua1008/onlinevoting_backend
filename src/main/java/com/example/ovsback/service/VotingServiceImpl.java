@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.example.ovsback.model.Voting;
 import com.example.ovsback.repository.VotingRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class VotingServiceImpl implements VotingService {
@@ -36,5 +38,15 @@ public class VotingServiceImpl implements VotingService {
     public List<Voting> getVotesByVoter(String voterEmail) {
         return votingRepo.findByVoterEmail(voterEmail);
     }
+    @Override
+    public Map<String, Long> countVotesPerCandidate() {
+        return votingRepo.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(
+                    Voting::getCandidateName,
+                    Collectors.counting()
+                ));
+    }
+
 }
 
